@@ -1,0 +1,39 @@
+@page "/fetchdata"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@implements IAsyncDisposable
+
+<h1>Weather forecast</h1>
+
+<HelloComp></HelloComp>
+
+
+<p>This component demonstrates fetching data from the server.</p>
+
+
+@code {
+    private HubConnection hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/feedback"))
+        .Build();
+
+        hubConnection.On<int>("channelB", state =>
+        {
+            Console.WriteLine($"new on channel B {state}");
+        });
+
+        await hubConnection.StartAsync();
+
+        Console.WriteLine($"Signalr page connected");
+
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await hubConnection.DisposeAsync();
+    }
+}

@@ -1,0 +1,33 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@implements IAsyncDisposable
+
+<h1>My component</h1>
+
+
+@code {
+    private HubConnection hub2;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hub2 = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/feedback"))
+        .Build();
+
+        hub2.On<int>("channelA", state =>
+        {
+            Console.WriteLine($"new on channel A {state}");
+        });
+
+        await hub2.StartAsync();
+
+        Console.WriteLine($"Signalr comp connected");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await hub2.DisposeAsync();
+    }
+
+}
